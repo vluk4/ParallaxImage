@@ -1,6 +1,8 @@
 # ParallaxImage
 ParallaxImage is a Jetpack Compose library that provides a ParallaxImage composable function to load and display images with a parallax effect based on the device's sensors. It utilizes the Coil library for image loading and is compatible with Android 12 (API level 31) and above.
-![Alt Text]("https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGM1ZWZjNWVlN2JkODY1MmQ3ODYyNDgwZjdiMTlhYTgwOWQ1ZWMwNyZjdD1n/RlZemRZAurcZ29lCEN/giphy.gif)
+
+<img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGM1ZWZjNWVlN2JkODY1MmQ3ODYyNDgwZjdiMTlhYTgwOWQ1ZWMwNyZjdD1n/RlZemRZAurcZ29lCEN/giphy.gif" width="264" height="480" />
+
 ### Features
 * Load and display images using the Coil library
 * Create a parallax effect based on the device's sensors
