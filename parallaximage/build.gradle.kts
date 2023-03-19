@@ -75,7 +75,7 @@ afterEvaluate {
                 // Replace with your library's group ID, artifact ID, and version
                 groupId = "com.vluk4"
                 artifactId = "parallax_view"
-                version = "1.0.2"
+                version = "1.0.3"
 
                 // Include the compiled library and its sources
                 from(components["release"])

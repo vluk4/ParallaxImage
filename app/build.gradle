@@ -47,7 +47,7 @@ android {
 }
 
 dependencies {
-    implementation ("com.github.vluk4:parallaximage:1.0.2")
+    implementation(project(":parallaximage"))
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
