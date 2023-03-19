@@ -67,3 +67,19 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("ParallaxView") {
+                // Replace with your library's group ID, artifact ID, and version
+                groupId = "com.vluk4"
+                artifactId = "parallax_view"
+                version = "1.0.0"
+
+                // Include the compiled library and its sources
+                from(components["release"])
+            }
+        }
+    }
+}
