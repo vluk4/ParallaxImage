@@ -1,5 +1,6 @@
 package com.vluk4.parallaximage
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,13 +27,15 @@ class MainActivity : ComponentActivity() {
                         .background(color = MaterialTheme.colors.background),
                     contentAlignment = Alignment.Center
                 ) {
-                    ParallaxImage(
-                        model = R.drawable.image_sample,
-                        modifier = Modifier.scale(0.8f),
-                        contentScale = ContentScale.Fit,
-                        shape = RoundedCornerShape(16.dp),
-                        depthMultiplier = 20
-                    )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        ParallaxImage(
+                            model = R.drawable.image_sample,
+                            modifier = Modifier.scale(0.8f),
+                            contentScale = ContentScale.Fit,
+                            shape = RoundedCornerShape(16.dp),
+                            depthMultiplier = 30
+                        )
+                    }
                 }
             }
         }
