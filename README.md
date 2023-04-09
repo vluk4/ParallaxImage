@@ -11,7 +11,7 @@ ParallaxImage is a Jetpack Compose library that provides a ParallaxImage composa
 To add ParallaxImage to your project, add the following dependency to your app's **build.gradle** file:
 ```
 dependencies {
-    implementation("com.vluk4:parallax_view:1.0.3")
+    implementation("com.github.vluk4:parallaximage:1.0.3")
 }
 ```
 And jitpack on repositories:
