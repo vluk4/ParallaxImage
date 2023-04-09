@@ -2,6 +2,7 @@ package com.vluk4.parallaximage
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -22,13 +23,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import coil.compose.AsyncImage
 import com.vluk4.parallaximage.sensor.SensorData
-import com.vluk4.parallaximage.sensor.SensorDataViewModel
-import kotlinx.coroutines.flow.StateFlow
+import com.vluk4.parallaximage.sensor.SensorDataManager
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -40,14 +41,13 @@ fun ParallaxImage(
     contentScale: ContentScale = ContentScale.None,
     contentDescription: String? = null
 ) {
+    val configuration = LocalConfiguration.current
     val context = LocalContext.current
-    val screenOrientation = LocalConfiguration.current.orientation
 
-    val sensorDataFlow = rememberSensorData(context, screenOrientation)
-    val sensorData = sensorDataFlow.collectAsState(initial = null)
+    val data = rememberSensorData(context, configuration)
 
     ParallaxView(
-        data = sensorData.value,
+        data = data,
         model = model,
         shape = shape,
         modifier = modifier,
@@ -57,35 +57,33 @@ fun ParallaxImage(
     )
 }
 
-@Composable
-fun rememberSensorData(context: Context, screenOrientation: Int): StateFlow<SensorData?> {
-    val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
-        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-    }
-    val factory = remember(context) {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                if (modelClass.isAssignableFrom(SensorDataViewModel::class.java)) {
-                    @Suppress("UNCHECKED_CAST")
-                    return SensorDataViewModel(context) as T
-                }
-                throw IllegalArgumentException("Unknown ViewModel class")
-            }
-        }
-    }
-    val sensorDataViewModel: SensorDataViewModel =
-        ViewModelProvider(viewModelStoreOwner, factory)[SensorDataViewModel::class.java]
 
-    DisposableEffect(screenOrientation) {
-        sensorDataViewModel.startSensorUpdates(screenOrientation)
+@Composable
+fun rememberSensorData(context: Context, configuration: Configuration): SensorData? {
+    val scope = rememberCoroutineScope()
+    var data by remember { mutableStateOf<SensorData?>(null) }
+    val deviceOrientation = configuration.orientation
+
+    DisposableEffect(deviceOrientation) {
+        val dataManager = SensorDataManager(context)
+        dataManager.init(deviceOrientation)
+
+        val job = scope.launch {
+            dataManager.data
+                .receiveAsFlow()
+                .onEach { data = it }
+                .collect()
+        }
+
 
         onDispose {
-            sensorDataViewModel.stopSensorUpdates()
+            dataManager.cancel()
+            job.cancel()
         }
     }
-
-    return sensorDataViewModel.sensorData
+    return data
 }
+
 
 @SuppressLint("UnrememberedMutableState")
 @Composable

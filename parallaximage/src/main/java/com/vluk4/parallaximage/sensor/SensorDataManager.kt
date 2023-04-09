@@ -6,13 +6,14 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import kotlinx.coroutines.channels.Channel
 
 class SensorDataManager(context: Context) : SensorEventListener {
 
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
     private val magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
-    var dataCallback: ((SensorData) -> Unit)? = null
+    val data = Channel<SensorData>(Channel.UNLIMITED)
     private var screenOrientation: Int = Configuration.ORIENTATION_PORTRAIT
 
     private var gravity: FloatArray? = null
@@ -59,7 +60,7 @@ class SensorDataManager(context: Context) : SensorEventListener {
             }
 
             if (pitch in -0.9f..0.9f && roll in -2.5f..2.5f) {
-                dataCallback?.invoke(SensorData(roll = roll, pitch = pitch))
+                data.trySend(SensorData(roll = roll, pitch = pitch))
             }
         }
     }
@@ -68,7 +69,7 @@ class SensorDataManager(context: Context) : SensorEventListener {
 
     companion object {
         private const val INITIAL_PORTRAIT_OFFSET = 0.5f
-        private const val INITIAL_LANDSCAPE_OFFSET = 1f
+        private const val INITIAL_LANDSCAPE_OFFSET = 0.8f
     }
 }
 
